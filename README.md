@@ -84,4 +84,4 @@ MIT
 
 ---
 
-**Made with ❤️ by Gaurav and GitHub Copilot**
+**Made with ❤️ by Gaurav(itsmegc)**
