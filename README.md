@@ -10,6 +10,7 @@ A full-stack AI-powered Resume Analyzer that matches candidate resumes to job de
 - **Scoring & Ranking:** Cosine similarity, candidate ranking, analysis summary
 - **Beautiful UI:** Responsive, modern design with Tailwind CSS
 - **Monorepo Structure:** Backend (Express) and Frontend (Next.js) in one repo
+- **Automatic File Cleanup:** Uploaded resumes are deleted from backend after analysis
 
 ## Project Structure
 
@@ -63,7 +64,12 @@ npm run dev --workspace web
 - Paste or type a Job Description
 - Click **Analyze** to see:
   - 📊 Analysis Summary (Total Candidates, Average Score, Top Score, Above 70%)
-  - 🏆 Candidate Rankings (name, score, snippet)
+  - 🏆 Candidate Rankings (name, score %, raw score, key highlights)
+
+**Notes:**
+- Candidate names are now displayed correctly in the frontend.
+- Uploaded files are automatically deleted from the backend after analysis.
+- UI is improved for clarity and accessibility.
 
 ## Tech Stack
 
@@ -84,4 +90,4 @@ MIT
 
 ---
 
-**Made with ❤️ by Gaurav(itsmegc)**
+**Made with ❤️ by @itsmegc**

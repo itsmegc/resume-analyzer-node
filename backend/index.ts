@@ -97,7 +97,15 @@ app.post("/upload", async (req: Request, res: Response) => {
 });
 
 // API: Analyze JD and rank candidates
-const analyzeUpload = multer();
+const analyzeStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "uploads"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+const analyzeUpload = multer({ storage: analyzeStorage });
 app.post("/analyze", analyzeUpload.array('files'), async (req: Request, res: Response) => {
   const jd = req.body.jd;
   if (!jd) {
@@ -116,19 +124,24 @@ app.post("/analyze", analyzeUpload.array('files'), async (req: Request, res: Res
 
   // For each file, extract text and add to vector store
   for (const file of files) {
+    console.log(`Processing file: ${file.originalname}, path: ${file.path}`);
     let text = "";
     try {
       text = await extractResumeText(file.path);
+      console.log(`Extracted text length for ${file.originalname}: ${text.length}`);
     } catch (err) {
+      console.error(`Failed to extract text from ${file.originalname}:`, err);
       continue; // skip failed files
     }
-  const candidate = { id: String(Date.now()) + '-' + Math.random().toString(36).slice(2), name: file.originalname };
+    const candidate = { id: String(Date.now()) + '-' + Math.random().toString(36).slice(2), name: file.originalname };
     const chunks = chunkText(text);
+    console.log(`Chunk count for ${file.originalname}: ${chunks.length}`);
     for (const chunk of chunks) {
       const embedding = await getEmbedding(chunk);
       vectorStore.push({ embedding, chunk, candidate });
     }
   }
+  console.log(`Vector store populated with ${vectorStore.length} entries.`);
 
   // Cosine similarity function
   function cosine(a: number[], b: number[]): number {
@@ -164,6 +177,16 @@ app.post("/analyze", analyzeUpload.array('files'), async (req: Request, res: Res
     }))
     .sort((a, b) => b.scorePct - a.scorePct);
 
+  // Remove uploaded files after processing
+  for (const file of files) {
+    if (file.path && fs.existsSync(file.path)) {
+      try {
+        fs.unlinkSync(file.path);
+      } catch (err) {
+        console.error(`Failed to delete file ${file.path}:`, err);
+      }
+    }
+  }
   res.json({ ranked });
 });
 
