@@ -5,6 +5,7 @@ import cors from "cors";
 import path from "path";
 // ...existing code...
 import uploadRouter from "./upload";
+import multer from "multer";
 import OpenAI from "openai";
 import textract from "textract";
 import fs from "fs";
@@ -12,6 +13,7 @@ import fs from "fs";
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -95,9 +97,38 @@ app.post("/upload", async (req: Request, res: Response) => {
 });
 
 // API: Analyze JD and rank candidates
-app.post("/analyze", async (req: Request, res: Response) => {
-  const { jobDescription } = req.body as { jobDescription: string };
-  const jdEmbedding = await getEmbedding(jobDescription);
+const analyzeUpload = multer();
+app.post("/analyze", analyzeUpload.array('files'), async (req: Request, res: Response) => {
+  const jd = req.body.jd;
+  if (!jd) {
+    return res.status(400).json({ error: "Missing job description (jd)" });
+  }
+  const jdEmbedding = await getEmbedding(jd);
+
+  // Process uploaded files
+  const files = req.files as Express.Multer.File[];
+  if (!files || files.length === 0) {
+    return res.status(400).json({ error: "No resumes uploaded" });
+  }
+
+  // Clear previous vector store for demo purposes
+  vectorStore.length = 0;
+
+  // For each file, extract text and add to vector store
+  for (const file of files) {
+    let text = "";
+    try {
+      text = await extractResumeText(file.path);
+    } catch (err) {
+      continue; // skip failed files
+    }
+  const candidate = { id: String(Date.now()) + '-' + Math.random().toString(36).slice(2), name: file.originalname };
+    const chunks = chunkText(text);
+    for (const chunk of chunks) {
+      const embedding = await getEmbedding(chunk);
+      vectorStore.push({ embedding, chunk, candidate });
+    }
+  }
 
   // Cosine similarity function
   function cosine(a: number[], b: number[]): number {
