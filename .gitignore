@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+dist/
+.env
+.env.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Next.js
+.next/
+
+# Misc
+*.swp
+*.swo
+
+# Monorepo
+/web/node_modules/
+/web/.next/
+/web/dist/
+/backend/node_modules/
+/backend/dist/

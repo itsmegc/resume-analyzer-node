@@ -1,0 +1,44 @@
+{
+  "name": "resume-analyzer-node-monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "web"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsmegc/resume-analyzer-node.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsmegc/resume-analyzer-node/issues"
+  },
+  "homepage": "https://github.com/itsmegc/resume-analyzer-node#readme",
+  "dependencies": {
+    "@types/multer": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "mammoth": "^1.11.0",
+    "multer": "^2.0.2",
+    "openai": "^4.104.0",
+    "pdf-parse": "^1.1.1",
+    "textract": "^2.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/textract": "^2.4.5"
+  }
+}
